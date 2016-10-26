@@ -34,7 +34,7 @@ def summerize(layer):
 		date_list.append(date)
 	
 	date_diff_list = list(set(date_list) - set(db_list))
-	]
+	
 	# summerizing files
 	for i in date_diff_list:
 		print("processing date: " + i)
