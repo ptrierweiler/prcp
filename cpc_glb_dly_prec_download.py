@@ -10,7 +10,7 @@ def zip_func(zfile, path):
 
 path = '/data/prcp/cpc_glb_dly_prec'
 # download using wget should change to python
-os.system('wget -r -nc -np -nd -A zip http://ftp.cpc.ncep.noaa.gov/GIS/GRADS_GIS/GeoTIFF/GLB_DLY_PREC/daily/')
+os.system('wget -r -nc -np -nd -A zip -P {path} http://ftp.cpc.ncep.noaa.gov/GIS/GRADS_GIS/GeoTIFF/GLB_DLY_PREC/daily/'.format(path=path))
 
 # get list of files
 file_list = os.listdir(path)
