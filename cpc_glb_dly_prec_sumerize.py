@@ -15,10 +15,14 @@ def summerize(layer):
 	# Find dates in db
 	print("Finding dates in {schema}.{table} for {layer}".format(schema=schema, 
 	table=table, layer=layer))
-	cur.execute("select distinct date from {schema}.{table} where geolayer = '{layer}'".format(schema=schema, 
+	cur.execute("select distinct date::text from {schema}.{table} where geolayer = '{layer}'".format(schema=schema, 
 	table=table, layer=layer))
 	db_list = cur.fetchall()
 	
+	db_list_cln = []
+	for i in db_list:
+	   db_list_cln.append(i[0])
+	   
 	# image list
 	cur.execute("select tablename from pg_catalog.pg_tables \
 	where schemaname = 'cpc_glb_dly_prec' and tablename <> 'data'")
@@ -33,7 +37,7 @@ def summerize(layer):
 		date = "{yr}-{mn}-{dy}".format(yr=yr, mn=mn, dy=dy)
 		date_list.append(date)
 	
-	date_diff_list = list(set(date_list) - set(db_list))
+	date_diff_list = list(set(date_list) - set(db_list_cln))
 	
 	# summerizing files
 	for i in date_diff_list:
@@ -55,7 +59,7 @@ def summerize(layer):
 			cur.execute("insert into cpc_glb_dly_prec.data values \
 			(%s, %s, %s, %s, %s, %s)",(pt_id,
 			cell_cnt, mean, median, date, layer))
-			conn.commit()
+		conn.commit()
 
 summerize('nass_asds')
 cur.close()
