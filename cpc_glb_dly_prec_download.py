@@ -29,3 +29,5 @@ for i in zip_list:
 
 # uploading file_list
 os.system('/scripts/prcp/cpc_glb_dly_prec_upload.py')
+# summerizing 
+os.system('/scripts/prcp/cpc_glb_dly_prec_sumerize.py')
