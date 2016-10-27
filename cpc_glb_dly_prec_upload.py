@@ -33,6 +33,7 @@ for i in tif_list:
 
 upload_list = list(set(tif_list_db) - set(db_list_cln))
 
+print(len(upload_list))
 for i in upload_list:
     tif_file = path + '/' + i.upper() + '.tif'
     tif_file = tif_file.replace('FLOAT','float')
