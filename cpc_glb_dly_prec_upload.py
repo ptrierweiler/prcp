@@ -14,7 +14,7 @@ for i in file_list:
 
 
 try:
-    conn = psycopg2.connect("dbname='fato'")
+    conn = psycopg2.connect("dbname='tlaloc'")
 except:
     print("I am unable to connect to the database")
     exit()
@@ -40,7 +40,7 @@ print(len(upload_list))
 for i in upload_list:
     tif_file = path + '/' + i.upper() + '.tif'
     tif_file = tif_file.replace('FLOAT','float')
-    os.system("raster2pgsql -C -I -N -999 {tif_file} -d cpc_glb_dly_prec.{db_file} | psql fato".format(tif_file=tif_file,db_file=i))
+    os.system("raster2pgsql -C -I -N -999 {tif_file} -d cpc_glb_dly_prec.{db_file} | psql tlaloc".format(tif_file=tif_file,db_file=i))
 	
 cur.close()
 conn.close()
