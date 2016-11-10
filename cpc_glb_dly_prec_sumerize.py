@@ -5,7 +5,7 @@ schema = 'cpc_glb_dly_prec'
 table = 'data'
 
 try:
-    conn = psycopg2.connect("dbname='fato'")
+    conn = psycopg2.connect("dbname='tlaloc'")
 except:
     print("I am unable to connect to the database")
     exit()
@@ -62,6 +62,7 @@ def summerize(layer):
 		conn.commit()
 
 summerize('nass_asds')
+summerize('ana_bacias')
 cur.close()
 conn.close()
 		
