@@ -44,25 +44,26 @@ def summerize(layer):
 		print("processing date: " + i)
 		image = "cpc_glb_dly_prec.cpc_glb_dly_prec_{date}_float".format(date=i.replace('-',''))
 		geo = "wgs84" '.' + layer
-		cur.execute("SELECT pt_id, (stats).count,(stats).mean::numeric(7,3), \
-		median::numeric(7,3) FROM (SELECT pt_id, \
+		cur.execute("SELECT gid, (stats).count,(stats).mean::numeric(7,3), \
+		median::numeric(7,3) FROM (SELECT gid, \
 		ST_SummaryStats(ST_Clip(rast, {geo}.wkb_geometry)::raster) as stats, \
 		ST_Quantile(ST_Clip(rast, {geo}.wkb_geometry)::raster,.5) as median from {image}, {geo} \
 		where st_intersects(rast, {geo}.wkb_geometry)) as foo".format(image=image, geo=geo))
 		sum_data = cur.fetchall()
 		for row in sum_data:
-			pt_id = row[0]
+			gid = row[0]
 			cell_cnt = row[1]
 			mean = row[2]
 			median = row[3]
 			date = i
 			cur.execute("insert into cpc_glb_dly_prec.data values \
-			(%s, %s, %s, %s, %s, %s)",(pt_id,
+			(%s, %s, %s, %s, %s, %s)",(gid,
 			cell_cnt, mean, median, date, layer))
 		conn.commit()
 
 summerize('nass_asds')
 summerize('ana_bacias')
+summerize('brasil_mesoregion')
 cur.close()
 conn.close()
 		
