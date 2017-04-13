@@ -1,17 +1,19 @@
 #!/usr/bin/python3
 import os
 import psycopg2
+import argparse
 
 path = '/data/prcp/cpc_glb_dly_prec'
 
-file_list = os.listdir(path)
+parser = argparse.ArgumentParser(description='Uploads cpc prcp rasters to db')
 
-# get list of tif
-tif_list = []
-for i in file_list:
-   if i.split('.')[1] == 'tif' and 'latest' not in i:
-       tif_list.append(i)
+parser.add_argument('-f', type=str, metavar='CPC_GLB_DLY_PREC_20160708_float.tif', nargs='?', required=True,
+                    help='tif file of CPC')
 
+
+args = parser.parse_args()
+
+in_file = args.f
 
 try:
     conn = psycopg2.connect("dbname='tlaloc'")
@@ -20,28 +22,21 @@ except:
     exit()
 cur = conn.cursor()
 
-cur.execute("select tablename from pg_catalog.pg_tables where schemaname = 'cpc_glb_dly_prec'")
-db_list = cur.fetchall()
+# remove path
+layer = os.path.basename(in_file).replace('.tif','')
 
-db_list_cln = []
-for i in db_list:
-    db_list_cln.append(i[0])
+# see if file exists in the be
+cur.execute("select count(*) from pg_catalog.pg_tables " +
+			"where tablename = '{}' and schemaname = 'cpc_glb_dly_prec'".format(layer))
+layer_chk = cur.fetchall()[0][0]
 
-tif_list_db = []
-for i in tif_list:
-   tif_list_db.append(i.lower().split('.')[0])
 
-upload_list = list(set(tif_list_db) - set(db_list_cln))
-if len(upload_list) == 0:
-   print("No new images")
-   exit(0)
-
-print(len(upload_list))
-for i in upload_list:
-    tif_file = path + '/' + i.upper() + '.tif'
+if layer_chk == 0:
+    tif_file = path + '/' + layer.upper() + '.tif'
     tif_file = tif_file.replace('FLOAT','float')
-    os.system("raster2pgsql -C -I -N -999 {tif_file} -d cpc_glb_dly_prec.{db_file} | psql tlaloc".format(tif_file=tif_file,db_file=i))
-	
+    os.system("raster2pgsql -C -I -N -999 {tif} ".format(tif=tif_file) +
+			  "-d cpc_glb_dly_prec.{db_file} | psql tlaloc".format(db_file=layer))
+
 cur.close()
 conn.close()
 
