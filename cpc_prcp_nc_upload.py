@@ -76,7 +76,7 @@ for i in range(1,max_band+1):
         os.system('gdal_merge.py -o {out}_fix.tif {out}_east.tif {out}_west.tif'.format(out=name))
         print(db_date)
         os.system("gdalwarp -t_srs WGS84 {out}_fix.tif {out}_wgs84.tif".format(out=name))
-        os.system("raster2pgsql -I {out}_wgs84.tif -d cpc_prcp.{tab} | psql {db}".format(out=name, tab=table, db=dbname))
+        os.system("raster2pgsql -I -N 9.96920996838686905e+36 {out}_wgs84.tif -d cpc_prcp.{tab} | psql {db}".format(out=name, tab=table, db=dbname))
         os.remove("{}_east.tif".format(name))
         # resample down .25
         cur.execute("update cpc_prcp.{} set rast=ST_Rescale(rast, .25, -.25)".format(table))
